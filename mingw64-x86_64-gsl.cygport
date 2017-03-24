@@ -3,7 +3,7 @@ inherit cross
 
 NAME="mingw64-x86_64-gsl"
 VERSION=2.3
-RELEASE=1
+RELEASE=2
 CATEGORY="Devel"
 SUMMARY="GNU Scientific Library for Win64 toolchain"
 DESCRIPTION="the GNU Scientific Library, a collection of numerical routines for
@@ -29,6 +29,7 @@ src_install() {
 	cd ${B}
 	cyginstall bin_PROGRAMS= INFO_DEPS= man_MANS=
 
-	echo "#include <cblas.h>" > ${D}${CROSS_INCLUDEDIR}/gsl/gsl_cblas.h
+	includeinto gsl
+	doinclude ${S}/cblas/gsl_cblas.h
 	dosym libcblas.dll.a ${CROSS_LIBDIR}/libgslcblas.dll.a
 }

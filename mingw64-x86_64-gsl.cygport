@@ -1,0 +1,34 @@
+CROSS_HOST="x86_64-w64-mingw32"
+inherit cross
+
+NAME="mingw64-x86_64-gsl"
+VERSION=2.3
+RELEASE=1
+CATEGORY="Devel"
+SUMMARY="GNU Scientific Library for Win64 toolchain"
+DESCRIPTION="the GNU Scientific Library, a collection of numerical routines for
+scientific computing. The library provides a wide range of mathematical routines
+such as random number generators, special functions and least-squares fitting."
+HOMEPAGE="http://www.gnu.org/software/gsl/"
+SRC_URI="mirror://gnu/gsl/gsl-${VERSION}.tar.gz"
+SRC_DIR="gsl-${VERSION}"
+PATCH_URI="
+	http://pkgs.fedoraproject.org/cgit/gsl.git/plain/gsl-tol.patch
+	http://pkgs.fedoraproject.org/cgit/gsl.git/plain/gsl-test.patch
+	2.3-system-cblas.patch
+"
+
+CYGPORT_USE_UNSTABLE_API=1
+src_patch_hook() {
+	sed -i -e 's|cblas/libgslcblas.la|-lcblas|' Makefile.am
+	sed -i -e 's|\.\./cblas/libgslcblas.la|-lcblas|' */Makefile.am
+	sed -i -e 's|\.\./\.\./cblas/libgslcblas.la|-lcblas|' doc/examples/Makefile.am
+}
+
+src_install() {
+	cd ${B}
+	cyginstall bin_PROGRAMS= INFO_DEPS= man_MANS=
+
+	echo "#include <cblas.h>" > ${D}${CROSS_INCLUDEDIR}/gsl/gsl_cblas.h
+	dosym libcblas.dll.a ${CROSS_LIBDIR}/libgslcblas.dll.a
+}
